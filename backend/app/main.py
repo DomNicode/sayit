@@ -12,6 +12,9 @@ api_key = os.getenv("GROQ_API_KEY")
 client = AsyncGroq(api_key=api_key)
 app = FastAPI()
 
+@app.get("/")
+async def main():
+    return{"Hello Here is Ai-based web app SayIt"}
 @app.get("/api/health")
 async def health():
     return{"status":"ok"}
