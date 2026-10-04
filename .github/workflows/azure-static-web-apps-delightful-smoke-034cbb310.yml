@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      -'frontend/**'
-      -'.github/workflows/azure-static-web-apps-*.yml'
+      - 'frontend/**'
+      - '.github/workflows/azure-static-web-apps-*.yml'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
