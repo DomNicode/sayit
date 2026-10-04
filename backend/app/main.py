@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 from groq import AsyncGroq
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 class ChatRequest(BaseModel):
     message: str
@@ -10,7 +11,17 @@ class ChatRequest(BaseModel):
 load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
 client = AsyncGroq(api_key=api_key)
+
+origins = os.getenv("CORS_ORIGINS", "").split(",")
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 @app.get("/")
 async def main():
