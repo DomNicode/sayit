@@ -19,7 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: agent
+        - name: {{.Chart.Name}}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -30,7 +30,7 @@ spec:
               value: {{ .Values.image.tag | quote }}
           readinessProbe:
             httpGet:
-              path: /health
+              path: {{.Values.healthPath}}
               port: http
             initialDelaySeconds: 3
             periodSeconds: 5
