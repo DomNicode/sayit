@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sayit-agent
+description: SayIt Agent-Worker
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
