@@ -1,6 +1,10 @@
 name: agent
 
 on:
+  pull_request:
+    paths:
+      - "agent/**"
+      - ".github/workflows/agent.yml"
   push:
     branches: [main]
     paths:
@@ -8,21 +12,79 @@ on:
       - ".github/workflows/agent.yml"
   workflow_dispatch:
 
+# Standard für alle Jobs: nur lesen. Jobs mit mehr Bedarf setzen eigene Rechte.
 permissions:
   contents: read
-  packages: write
 
 env:
   IMAGE: ghcr.io/domnicode/sayit-agent
 
-# Läufe nacheinander abarbeiten, damit sich zwei Tag-Commits nicht in die Quere kommen
+# Eine Warteschlange pro Branch: main läuft nacheinander (kein Tag-Konflikt),
+# bei PRs bricht ein neuer Push den alten Lauf ab.
 concurrency:
-  group: agent
-  cancel-in-progress: false
+  group: agent-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
+  quality:
     runs-on: ubuntu-24.04-arm
+    defaults:
+      run:
+        working-directory: agent
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: agent/requirements*.txt
+
+      - name: Abhängigkeiten installieren
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check --output-format=github .
+
+      - name: Formatierung (ruff)
+        run: ruff format --check .
+
+      - name: Tests (pytest)
+        run: pytest
+
+  security:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Secrets-Scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: SAST (Semgrep)
+        run: |
+          pip install semgrep
+          semgrep scan --config p/python --config p/dockerfile --error agent/
+
+      - name: Abhängigkeiten und Konfiguration (Trivy)
+        run: |
+          docker run --rm -v "$PWD:/src" aquasec/trivy:latest fs \
+            --scanners vuln,misconfig \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            /src/agent
+
+  build:
+    needs: [quality, security]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v5
 
