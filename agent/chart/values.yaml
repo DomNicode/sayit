@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/domnicode/sayit-agent
-  tag: "03cc98fa3f5edcdeaa796e52845f434caa4b4003"
+  tag: "7e8453567a454db9786113257e4bf7bf940023d7"
   pullPolicy: IfNotPresent
 # Zugangsdaten für das private GHCR-Paket (Secret liegt im Namespace sayit)
 imagePullSecrets:
