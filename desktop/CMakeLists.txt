@@ -18,10 +18,16 @@ qt_add_qml_module(sayit-desktop
     VERSION 1.0
     QML_FILES
         qml/Main.qml
+        SOURCES src/AppController.h
+        SOURCES src/AppController.cpp
 )
 
 set_target_properties(sayit-desktop PROPERTIES
     WIN32_EXECUTABLE TRUE
+)
+
+target_include_directories(sayit-desktop PRIVATE
+    src
 )
 
 target_link_libraries(sayit-desktop PRIVATE
