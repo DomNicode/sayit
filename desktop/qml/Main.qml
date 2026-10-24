@@ -18,7 +18,9 @@ ApplicationWindow {
         spacing: 16
 
         Label {
-            text: window.controller.running ? qsTr("Agent hört zu …") : qsTr("Bereit")
+            text: !window.controller.running ? qsTr("Bereit") : window.controller.speaking ?
+                                                   qsTr("Agent spricht ...")
+                                                 : qsTr("Agent hört zu ...")
             color: "#e0e0e0"
             font.pixelSize: 20
             Layout.alignment: Qt.AlignHCenter
@@ -29,7 +31,12 @@ ApplicationWindow {
             Layout.preferredHeight: 160
             Layout.alignment: Qt.AlignHCenter
             radius: width / 2
-            color: window.controller.running ? "#d64545" : "#3d6fd6"
+            color: !window.controller.running ? "#3d6fd6" : window.controller.speaking ?
+                                                    "#e0a030"
+                                                  : "#2e9e6b"
+            Behavior on color { ColorAnimation { duration: 250 } }
+            scale: window.controller.speaking ? 1.1 : 1.0
+            Behavior on scale { NumberAnimation { duration: 250 } }
         }
 
         Button {

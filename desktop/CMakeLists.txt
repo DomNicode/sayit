@@ -20,6 +20,9 @@ qt_add_qml_module(sayit-desktop
         qml/Main.qml
         SOURCES src/AppController.h
         SOURCES src/AppController.cpp
+        SOURCES src/VoiceClient.h
+        SOURCES src/MockVoiceClient.h
+        SOURCES src/MockVoiceClient.cpp
 )
 
 set_target_properties(sayit-desktop PROPERTIES

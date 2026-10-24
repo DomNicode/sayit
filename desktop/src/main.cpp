@@ -1,12 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "AppController.h"
+#include "MockVoiceClient.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QGuiApplication::setApplicationName("SayIt");
-    AppController controller;
+    MockVoiceClient voiceClient;
+    AppController controller(&voiceClient);
     QQmlApplicationEngine engine;
     engine.setInitialProperties({{"controller", QVariant::fromValue(&controller)}});
     QObject::connect(
