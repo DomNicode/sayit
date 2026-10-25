@@ -5,7 +5,7 @@ project(SayItDesktop VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.10 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.10 REQUIRED COMPONENTS Quick Test)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -36,3 +36,23 @@ target_include_directories(sayit-desktop PRIVATE
 target_link_libraries(sayit-desktop PRIVATE
     Qt6::Quick
 )
+
+
+#Tests
+enable_testing()
+
+qt_add_executable(tst_appcontroller
+    tests/tst_appcontroller.cpp
+    src/AppController.h
+    src/AppController.cpp
+    src/VoiceClient.h
+)
+
+target_include_directories(tst_appcontroller PRIVATE src)
+
+target_link_libraries(tst_appcontroller PRIVATE
+    Qt6::Test
+    Qt6::Qml
+)
+
+add_test(NAME tst_appcontroller COMMAND tst_appcontroller)
