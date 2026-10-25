@@ -26,10 +26,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
-            qt-arch: win64_msvx2022_64
           - os: ubuntu-24.04
             qt-arch: linux_gcc_64
+          # Windows OS vorerst deaktiviert...
+          #- os: windows-latest
+          #  qt-arch: win64_msvc2022_64
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -57,7 +59,7 @@ jobs:
           extra: '--base https://download.qt.io/'
       
       - name: Konfigurieren
-        run: cmake -S . -B build -G Ninja -DCMAKE-BUILD-TYPE=Release
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Bauen
         run: cmake --build build
