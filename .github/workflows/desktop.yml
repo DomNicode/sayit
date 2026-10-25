@@ -45,7 +45,7 @@ jobs:
           sudo apt-get install -y ninja-build libgl1-mesa-dev libxkbcommon-dev
       
       - name: MSVC-Umgebung
-        if: runner.os = ='Windows'
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
       
       - name: Qt installieren
@@ -54,6 +54,7 @@ jobs:
           version: '6.12.0'
           arch: ${{ matrix.qt-arch }}
           cache: true
+          extra: '--base https://download.qt.io/'
       
       - name: Konfigurieren
         run: cmake -S . -B build -G Ninja -DCMAKE-BUILD-TYPE=Release
