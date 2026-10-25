@@ -27,11 +27,10 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            qt-arch: win64_msvx2022_64
-            qt-version: '6.11.2' # 6.12.0 unter Windows per aqtinstall nicht ladbar, siehe Issue #11
+            qt-arch: win64_msvc2022_64
           - os: ubuntu-24.04
             qt-arch: linux_gcc_64
-            qt-version: '6.12.0'
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -53,7 +52,7 @@ jobs:
       - name: Qt installieren
         uses: jurplel/install-qt-action@v4
         with:
-          version: ${{ matrix.qt-version }}
+          version: '6.12.0'
           arch: ${{ matrix.qt-arch }}
           cache: true
       
