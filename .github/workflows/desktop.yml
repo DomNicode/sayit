@@ -1,0 +1,65 @@
+name: desktop
+
+on:
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request'}}
+
+jobs:
+  build-test:
+    name: build & test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            qt-arch: win64_msvx2022_64
+          - os: ubuntu-24.04
+            qt-arch: linux_gcc_64
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: desktop
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Linux-Pakete
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgl1-mesa-dev libxkbcommon-dev
+      
+      - name: MSVC-Umgebung
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+      
+      - name: Qt installieren
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.12.0'
+          arch: ${{ matrix.qt-arch }}
+          cache: true
+      
+      - name: Konfigurieren
+        run: cmake -S . -B build -G Ninja -DCMAKE-BUILD-TYPE=Release
+
+      - name: Bauen
+        run: cmake --build build
+
+      - name: Testen
+        run: ctest --test-dir build --output-on-failure
