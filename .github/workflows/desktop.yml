@@ -28,9 +28,9 @@ jobs:
         include:
           - os: ubuntu-24.04
             qt-arch: linux_gcc_64
-          # Windows OS vorerst deaktiviert...
-          #- os: windows-latest
-          #  qt-arch: win64_msvc2022_64
+          
+          - os: windows-latest
+            qt-arch: win64_msvc2022_64
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -56,7 +56,7 @@ jobs:
           version: '6.12.0'
           arch: ${{ matrix.qt-arch }}
           cache: true
-          extra: '--base https://download.qt.io/'
+          aqtsource: 'git+https://github.com/miurahr/aqtinstall.git@8c3695d'
       
       - name: Konfigurieren
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
